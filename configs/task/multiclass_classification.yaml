@@ -3,8 +3,8 @@ _name_: multiclass
 loss: cross_entropy
 metrics:
   - accuracy
-torchmetrics:
-  - AUROC
-  - Precision
-  - Recall
-  - F1
+# torchmetrics:
+#   - AUROC
+#   - Precision
+#   - Recall
+#   - F1Score

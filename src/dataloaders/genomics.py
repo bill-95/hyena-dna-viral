@@ -19,6 +19,7 @@ from src.dataloaders.datasets.species_dataset import SpeciesDataset
 from src.dataloaders.datasets.icl_genomics_dataset import ICLGenomicsDataset
 from src.dataloaders.datasets.hg38_fixed_dataset import HG38FixedDataset
 from src.dataloaders.datasets.viral_dataset import ViralDataset
+from src.dataloaders.datasets.clinvar_dataset import ClinvarDataset
 
 """
 
@@ -346,8 +347,6 @@ class Clinvar(HG38):
         self.pin_memory = pin_memory
         self.drop_last = drop_last
 
-        if self.dest_path is None:
-            self.dest_path = default_data_path / self._name_
 
         if fault_tolerant:
             assert self.shuffle
@@ -384,7 +383,6 @@ class Clinvar(HG38):
                 use_padding=self.use_padding,
                 d_output=self.d_output,
                 add_eos=self.add_eos,
-                dest_path=self.dest_path,
                 rc_aug=self.rc_aug,
                 return_augs=False
             )

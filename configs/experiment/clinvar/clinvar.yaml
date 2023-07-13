@@ -50,8 +50,8 @@ dataset:
   # batch_size: 32  # Per GPU
   batch_size: 256
   max_length: 1024 # select max that you want for this dataset
-  samples_path: '/home/linqi2/projects/def-ytrakadi/linqi2/hyena/hyena-dna/data/clinvar'
-  genome_path: '/home/linqi2/projects/def-ytrakadi/linqi2/hyena/hyena-dna/data/genome/GRCh38.p13.fa'
+  samples_path: '...'
+  genome_path: '...'
   d_output: 2  # binary classification by default
   use_padding: True
   padding_side: 'left'
@@ -79,7 +79,7 @@ train:
   remove_test_loader_in_eval: true  # no test set in this benchmark
   pretrained_model_strict_load: False  # false allows encoder/decoder to be used if new model uses it
   # for loading backbone and not head, requires both of these flags below
-  pretrained_model_path: /home/linqi2/projects/def-ytrakadi/linqi2/hyena/pretrained_models/hyenadna-tiny-1k-seqlen/weights.ckpt
+  pretrained_model_path: ...
   pretrained_model_state_hook:
     _name_: load_backbone
     freeze_backbone: false  # seems to work much better if false (ie finetune entire model)

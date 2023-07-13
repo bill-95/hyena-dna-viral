@@ -2,7 +2,8 @@ import pickle
 from random import random
 import numpy as np
 from pathlib import Path
-from torch.utils.data import DataLoader
+from pyfaidx import Fasta
+import torch
 
 # helper functions
 def exists(val):
@@ -35,7 +36,7 @@ class SampleSeq():
 
         self.g = Fasta(str(fasta_file))
 
-    def __call__(self, chrom, pos, ref, alt, length):
+    def __call__(self, chrom, pos, ref, alt, variant_type, length=1024):
         # shift starting position 1 to the left for consistency with reference genome
         pos = pos - 1
 
@@ -87,10 +88,10 @@ class ClinvarDataset(torch.utils.data.Dataset):
         return_augs=False,
     ):
         # read in sample data
-        with open(f'{samples_path}/samples.p') as f:
+        with open(f'{samples_path}/samples.p', 'rb') as f:
             self.samples = pickle.load(f)
             
-        with open(f'{samples_path}/sample_splits.p') as f:
+        with open(f'{samples_path}/sample_splits.p', 'rb') as f:
             sample_splits = pickle.load(f)
             self.sample_ids = sample_splits[split]
             
