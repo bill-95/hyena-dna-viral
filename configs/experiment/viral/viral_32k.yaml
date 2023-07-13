@@ -35,7 +35,7 @@ task:
 
 trainer:
   accelerator: gpu
-  devices: 1
+  devices: 2
   num_nodes: 1
   accumulate_grad_batches: ${div_up:${train.global_batch_size}, ${eval:${trainer.devices} * ${dataset.batch_size} * ${trainer.num_nodes}}}
   max_epochs: 100
@@ -45,7 +45,7 @@ trainer:
 
 dataset:
   # batch_size: 32  # Per GPU
-  batch_size: 4
+  batch_size: 16
   max_length: ${model.layer.l_max} # 262144, 524288
   tokenizer_name: char
   pad_max_length: null  # needed for bpe tokenizer
@@ -68,4 +68,4 @@ optimizer:
 train:
   gpu_mem: ${eval:"round(float(__import__('subprocess').check_output('nvidia-smi -i 0 --query-gpu=memory.total --format=csv,noheader,nounits', shell=True).strip().decode()) / 1000)"}
   seed: 2222
-  global_batch_size: 4  # effects the scheduler, need to set properly
+  global_batch_size: 32  # effects the scheduler, need to set properly

@@ -13,7 +13,9 @@ train:
 
 task:
   _name_: lm
-  loss: cross_entropy
+  loss: 
+    _name_: cross_entropy
+    ignore_index: 4
   torchmetrics: ['perplexity', 'num_tokens']
 
 encoder: null
