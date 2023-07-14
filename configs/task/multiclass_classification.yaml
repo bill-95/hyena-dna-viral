@@ -2,7 +2,9 @@
 _name_: multiclass
 loss: cross_entropy
 metrics:
-  - accuracy
+  - accuracy_per_class
+  - roc_auc_macro
+  - f1_binary
 # torchmetrics:
 #   - AUROC
 #   - Precision

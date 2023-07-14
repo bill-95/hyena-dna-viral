@@ -137,7 +137,8 @@ class ClinvarDataset(torch.utils.data.Dataset):
         # need to handle eos here
         if self.add_eos:
             # append list seems to be faster than append tensor
-            seq.append(self.tokenizer.sep_token_id)
+            seq = seq + [self.tokenizer.sep_token_id]
+            # seq.append(self.tokenizer.sep_token_id)
 
         # convert to tensor
         seq = torch.LongTensor(seq)

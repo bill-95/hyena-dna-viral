@@ -318,7 +318,7 @@ class Clinvar(HG38):
     _name_ = "clinvar"
     l_output = 0  # need to set this for decoder to work correctly
 
-    def __init__(self, samples_path=None, genome_path=None, tokenizer_name='char', d_output=None, rc_aug=False,
+    def __init__(self, samples_path=None, genome_path=None, classes=['benign', 'patho'], tokenizer_name='char', d_output=None, rc_aug=False,
                 max_length=1024, use_padding=True, max_length_val=None, max_length_test=None,
                 padding_side='left', val_ratio=0.0005, val_split_seed=2357, add_eos=False, 
                 detokenize=False, val_only=False, batch_size=32, batch_size_eval=None, num_workers=1,
@@ -327,6 +327,7 @@ class Clinvar(HG38):
 
         self.samples_path = samples_path
         self.genome_path = genome_path
+        self.classes = classes
         self.tokenizer_name = tokenizer_name
         self.d_output = d_output
         self.rc_aug = rc_aug

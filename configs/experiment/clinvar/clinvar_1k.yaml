@@ -5,8 +5,8 @@ defaults:
 
 model:
   _name_: dna_embedding
-  d_model: 256
-  n_layer: 4
+  d_model: 128
+  n_layer: 2
   d_inner: ${eval:4 * ${.d_model}}
   vocab_size: 12
   resid_dropout: 0.0
@@ -14,15 +14,13 @@ model:
   fused_mlp: False # figure out how to use fused MLP, maybe only with bf16 + a100
   fused_dropout_add_ln: True
   residual_in_fp32: True
-  checkpoint_mixer: True
-  checkpoint_mlp: True
   pad_vocab_size_multiple: 8
   layer:
     _name_: hyena
     emb_dim: 5
     filter_order: 64
     local_order: 3
-    l_max: 32770  # required to be set the same as the pretrained model if using, don't forget the +2!  ${eval:${dataset.max_length}+2}
+    l_max: 1026  # required to be set the same as the pretrained model if using, don't forget the +2!  ${eval:${dataset.max_length}+2}
     modulate: True
     w: 10
     lr: ${optimizer.lr}
@@ -49,8 +47,8 @@ trainer:
   # strategy: null
 
 dataset:
-  batch_size: 24  # Per GPU
-  max_length: 32768 # select max that you want for this dataset
+  batch_size: 256  # Per GPU
+  max_length: 1024 # select max that you want for this dataset
   samples_path: '/localscratch/linqi2.19115449.0/data/clinvar'
   genome_path: '/localscratch/linqi2.19115449.0/data/genome/GRCh38.p13.fa'
   d_output: 2  # binary classification by default
@@ -61,7 +59,7 @@ dataset:
   train_len: 260401
   tokenizer_name: char
   num_workers: 6
-  # rc_aug: true  # reverse complement augmentation.  Didn't seem to help for human_nontata_promoters, but could be wrong
+  rc_aug: true  # reverse complement augmentation.  Didn't seem to help for human_nontata_promoters, but could be wrong
 
 scheduler:
   t_in_epochs: False
@@ -77,11 +75,11 @@ optimizer:
 train:
   gpu_mem: ${eval:"round(float(__import__('subprocess').check_output('nvidia-smi -i 0 --query-gpu=memory.total --format=csv,noheader,nounits', shell=True).strip().decode()) / 1000)"}
   seed: 2222
-  global_batch_size: 1920
+  global_batch_size: 2048
   remove_test_loader_in_eval: true  # no test set in this benchmark
   pretrained_model_strict_load: False  # false allows encoder/decoder to be used if new model uses it
   # for loading backbone and not head, requires both of these flags below
-  pretrained_model_path: /home/linqi2/projects/def-ytrakadi/linqi2/hyena/pretrained_models/hyenadna-small-32k-seqlen/weights.ckpt
+  pretrained_model_path: /home/linqi2/projects/def-ytrakadi/linqi2/hyena/pretrained_models/hyenadna-tiny-1k-seqlen/weights.ckpt
   pretrained_model_state_hook:
     _name_: load_backbone
     freeze_backbone: false  # seems to work much better if false (ie finetune entire model)

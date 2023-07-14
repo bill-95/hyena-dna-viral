@@ -50,9 +50,9 @@ class AccuracyPerClass(CorrectAggregatedMetric):
         relevant_idxs = (y == class_idx)
         numerator += (preds[relevant_idxs] == class_idx).sum()
         denominator += relevant_idxs.sum()
-        relevant_idxs = (y != class_idx)
-        numerator += (preds[relevant_idxs] != class_idx).sum()
-        denominator += relevant_idxs.sum()
+        # relevant_idxs = (y != class_idx)
+        # numerator += (preds[relevant_idxs] != class_idx).sum()
+        # denominator += relevant_idxs.sum()
         return numerator, denominator
 
 class PrecisionPerClass(CorrectAggregatedMetric):
@@ -325,7 +325,11 @@ def f1_binary(logits, y):
     logits = logits.view(-1, logits.shape[-1])
     y = y.view(-1)
     y_hat = torch.argmax(logits, dim=-1)
-    return f1_score(y.cpu().numpy(), y_hat.cpu().numpy(), average="binary")
+    try:
+        score = f1_score(y.cpu().numpy(), y_hat.cpu().numpy(), average="binary")
+        return score
+    except:
+        return 0.5
 
 
 def f1_macro(logits, y):
@@ -347,9 +351,13 @@ def roc_auc_macro(logits, y):
         -1, logits.shape[-1]
     ).detach()  # KS: had to add detach to eval while training
     y = y.view(-1)
-    return roc_auc_score(
-        y.cpu().numpy(), F.softmax(logits, dim=-1).cpu().numpy()[:, 1], average="macro"
-    )
+    try:
+        score = roc_auc_score(
+            y.cpu().numpy(), F.softmax(logits, dim=-1).cpu().numpy()[:, 1], average="macro"
+        )
+        return score
+    except:
+        return 0.5
 
 
 def roc_auc_micro(logits, y):

@@ -5,8 +5,9 @@ import requests
 import random
 import shutil
 import pandas as pd
+import numpy as np
 import tqdm
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 
 
 response = requests.get('https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz', stream=True)
@@ -63,19 +64,53 @@ for i, row in tqdm.tqdm(df.iterrows()):
     samples[sample_id] = (chrom, pos, ref, alt, variant_type, label)
     
     
-# create splits
-sample_ids = list(samples.keys())
-train_ids, test_val_ids = train_test_split(sample_ids, test_size=0.2, random_state=42)
-val_ids, test_ids = train_test_split(test_val_ids, test_size=0.5, random_state=42)
+# # create splits
+# sample_ids = list(samples.keys())
+# train_ids, test_val_ids = train_test_split(sample_ids, test_size=0.2, random_state=42)
+# val_ids, test_ids = train_test_split(test_val_ids, test_size=0.5, random_state=42)
 
+
+# # saving processed training samples
+# with open('../data/clinvar/samples.p', 'wb') as f:
+#     pickle.dump(samples, f)
+
+# with open('../data/clinvar/sample_splits.p', 'wb') as f:
+#     pickle.dump({
+#         'train': train_ids,
+#         'val': val_ids,
+#         'test': test_ids
+#     }, f)
+    
+    
+# create stratified k-fold splits
+sample_ids = []
+sample_labels = []
+for k, v in samples.items():
+    sample_ids.append(k)
+    sample_labels.append(v[-1])
+    
+train_ids, test_ids, y_train, y_test = train_test_split(
+    sample_ids, 
+    sample_labels, 
+    test_size=0.1, 
+    stratify=sample_labels, 
+    shuffle=True,
+    random_state=42
+)
+
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+train_ids = np.array(train_ids)
+sample_splits = {}
+for i, (train_fold, val_fold) in enumerate(skf.split(train_ids, y_train)):
+    print(f'Fold {i}', len(train_fold), len(val_fold))
+    train_ids_fold = train_ids[train_fold]
+    val_ids_fold = train_ids[val_fold]
+    sample_splits[i] = {'train': train_ids_fold, 'val': val_ids_fold}
 
 # saving processed training samples
 with open('../data/clinvar/samples.p', 'wb') as f:
     pickle.dump(samples, f)
 
 with open('../data/clinvar/sample_splits.p', 'wb') as f:
-    pickle.dump({
-        'train': train_ids,
-        'val': val_ids,
-        'test': test_ids
-    }, f)
+    pickle.dump(sample_splits, f)
+    

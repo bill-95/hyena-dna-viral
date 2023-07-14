@@ -198,7 +198,7 @@ class MultiClass(BaseTask):
         self.continual_metrics = {}
         for name in self.metric_names:
             if name.endswith('_per_class'):
-                for spec_idx, spec in enumerate(self.dataset.species):
+                for spec_idx, spec in enumerate(self.dataset.classes):
                     self.continual_metrics[name + '_' + spec] = M.output_metric_fns[name](spec_idx)
 
     def metrics(self, x, y, **kwargs):
@@ -206,7 +206,7 @@ class MultiClass(BaseTask):
         for name in self.metric_names:
             if name in M.output_metric_fns:
                 if name.endswith('_per_class'):
-                    for spec_idx, spec in enumerate(self.dataset.species):
+                    for spec_idx, spec in enumerate(self.dataset.classes):
                         self.continual_metrics[name + '_' + spec] = self.continual_metrics[name + '_' + spec].to(x.device)
                         self.continual_metrics[name + '_' + spec].update(x, y)
                         output_metrics[name + '_' + spec] = self.continual_metrics[name + '_' + spec].compute()
@@ -227,7 +227,7 @@ class MultiClass(BaseTask):
         super()._reset_torchmetrics(prefix)
         for name in self.metric_names:
             if name.endswith('_per_class'):
-                for spec_idx, spec in enumerate(self.dataset.species):
+                for spec_idx, spec in enumerate(self.dataset.classes):
                     self.continual_metrics[name + '_' + spec].reset()
         
 
